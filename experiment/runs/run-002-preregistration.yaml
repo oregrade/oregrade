@@ -1,0 +1,89 @@
+# oregrade — pre-registration for run-002 (confirmatory)
+#
+# Committed BEFORE any comparison against benchmarks/outcomes.yaml.
+# Nothing in this file may be edited after committed_at. A changed threshold is
+# a new pre-registration for a new run, not a correction to this one.
+
+run_002_preregistration:
+
+  committed_at: 2026-08-15
+
+  target_coverage: 0.36
+  target_coverage_rationale: >
+    Set against the rubric's ceiling, not against what a run happens to score.
+    Under point-in-time discipline rubric 0.2.0 cannot exceed 0.365 coverage:
+    dependent counts, download trends, hyperscaler catalogues, trademark
+    control, maintainer employment and both category_timing inputs are
+    live_tool_only or not_reconstructable, and together they are 63.5 of the
+    100 weight. Git alone reaches 0.320. The only legitimate way to close the
+    gap is GHArchive, which supplies `responsiveness` (0.15 of
+    maintainer_profile) and true merged-PR velocity, and which IS
+    point-in-time — it carries repo events from 2011.
+    0.36 therefore means exactly one thing: GHArchive is wired in and nothing
+    present-day has been back-filled onto a historical snapshot. Substituting
+    today's dependent counts to clear the bar would invalidate the run and is
+    the specific failure this number exists to prevent.
+
+  primary_comparison: commercialized_success (n=6) vs commercialized_modest (n=7)
+
+  metric: >
+    AUC by rank, computed as the Mann-Whitney concordance over all 6 x 7 = 42
+    cross-class pairs: the fraction of pairs in which the success project's
+    `score` exceeds the modest project's, ties counted as 0.5. Scores are
+    compared raw. They are NOT divided by max_achievable — that renormalisation
+    is the weight redistribution the rubric forbids — and since every scored
+    project in a single run shares the same max_achievable, ranking is
+    unaffected. Projects that stopped at a gate or failed to clone are excluded
+    from the comparison and their exclusion is reported with the result.
+
+  threshold: 0.75
+  threshold_rationale: >
+    AUC >= 0.75, i.e. at least 32 of the 42 cross-class pairs ordered
+    correctly. 0.75 is the conventional floor for acceptable discrimination in
+    diagnostic testing; below it the ordering carries too little information to
+    act on regardless of sample size. It is chosen for that reason and not
+    because it is attainable — at n=13 it is close to what a one-sided rank
+    test would call significant, which is deliberate: the bar should not be
+    clearable by noise. It will feel arbitrary. It is written down anyway and
+    does not move.
+
+  secondary_comparison: >
+    commercialized_success vs commercialized_failed. Reported, no threshold,
+    and explicitly the weaker test: the failed class still has a median
+    fund_snapshot around 2014 against 2016.5 for success, so vintage remains a
+    confound. A pass here with a fail on the primary is not a pass.
+
+  power: >
+    n=13 across the primary comparison. This is a directional check and CANNOT
+    support a significance claim. Any writeup must say so in those words. No
+    p-value will be computed or quoted.
+
+  external_sources:
+    - source: GHArchive (BigQuery, GitHub events from 2011)
+      adds:
+        - responsiveness (median issue first-response days at snapshot)
+        - merged_prs_trailing_90d (replaces the unreliable merge-commit proxy
+          and removes the gate-2 commit-velocity substitution)
+      why: >
+        The only external source that is genuinely point-in-time. Everything
+        else the rubric wants — dependents, downloads, cloud catalogues,
+        trademark registers — exists only as current state, and reading current
+        state onto a 2014 snapshot invalidates the backtest.
+      status: not yet implemented; needs a BigQuery project and billing
+    - source: NONE OTHER
+      why: >
+        Explicitly closed. No dependent counts, no download trends, no
+        hyperscaler catalogues, no trademark lookups. Adding any of them to
+        raise coverage would defeat the measurement it is meant to demonstrate.
+
+  scope_note: >
+    This pre-registration governs SCORING only. It says nothing about the gate
+    architecture, which this corpus cannot test — every entry was selected for
+    being a resolved commercial open source company, so licences, liveness,
+    commercial surfaces and entities are present by construction. Gate
+    falsification requires the inverted corpus described as run-003.
+
+  stop_rule: >
+    If the threshold is not met, the finding is recorded and published. No
+    retuning against outcomes. Any later variant is run-003 with its own
+    pre-registration.

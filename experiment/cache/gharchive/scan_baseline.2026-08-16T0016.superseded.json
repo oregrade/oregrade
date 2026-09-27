@@ -1,0 +1,18 @@
+{
+  "note": "measured by tools/collect_gharchive.py --dry-run",
+  "recorded_utc": "2026-08-16T00:16:21+00:00",
+  "bytes_by_bound_year": {
+    "2014": 6716587074,
+    "2015": 12578724090,
+    "2016": 24140600002,
+    "2017": 41655684050,
+    "2018": 63647212616,
+    "2019": 88918470312,
+    "2020": 121717125076,
+    "2021": 170425049080
+  },
+  "query_shape": "ac0ef50c8eb70e51",
+  "query_shape_note": "Measured against the repo.name filter. Superseded by the repo.id query (shape 7e6e70f330c2c092), which swaps a variable-length STRING column for a fixed-width INTEGER and so scans fewer bytes for an identical table list. Re-seed with tools/collect_gharchive.py --dry-run --reseed-baseline.",
+  "superseded_utc": "2026-08-16T13:06:49+00:00",
+  "superseded_because": "re-seeded against query shape 7e6e70f330c2c092; previous values archived alongside"
+}

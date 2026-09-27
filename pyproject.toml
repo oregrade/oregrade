@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "oregrade"
+version = "1.0.0"
+description = "Point-in-time fact sheet for an open source repository. No score."
+requires-python = ">=3.10"
+dependencies = ["PyYAML>=6"]
+
+[project.optional-dependencies]
+gharchive = ["google-cloud-bigquery>=3"]
+dev = ["pytest>=7"]
+
+[project.scripts]
+oregrade = "oregrade.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+# pitgit is packaged alongside for now. It has no oregrade imports and is
+# intended to be extracted as its own distribution — see src/pitgit/__init__.py.
+include = ["oregrade*", "pitgit*"]
+
+[tool.pytest.ini_options]
+pythonpath = ["src"]
+testpaths = ["tests"]

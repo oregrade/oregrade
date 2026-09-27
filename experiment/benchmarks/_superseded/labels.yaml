@@ -1,0 +1,422 @@
+« benchmarks/labels.yaml »
+method:
+  scoring_rule: 'CRITICAL: score each project at its snapshot_year, NOT at today''s state. Scoring Grafana
+    in 2026 is worthless; the rubric has to have picked Grafana in 2014. Any signal that cannot be reconstructed
+    point-in-time is excluded from the backtest, even if it ships in the live tool.
+
+    '
+  reconstructable:
+  - commit and PR history (full, from git)
+  - contributor concentration at date (from git)
+  - license at date (from git)
+  - repo events from 2011 onward (GHArchive)
+  not_reconstructable:
+  - dependent counts at date
+  - download trends at date
+  - stars at date (GHArchive partial, expensive)
+  blind_protocol: 'Score all 30 before looking at any label. Record scores in benchmarks/run-001.json.
+    Only then compare. Every later tuning pass gets its own run file and a one-line note on what changed
+    and why.
+
+    '
+labels:
+  commercialized_success: project became a substantial standalone company
+  commercialized_modest: company formed, outcome small or acqui-hire
+  commercialized_failed: serious attempt, did not work
+  never_commercialized: large project, no company ever formed
+  adversarial: the rubric is expected to get this wrong — that's the point
+projects:
+- repo: grafana/grafana
+  label: commercialized_success
+  company: Grafana Labs
+  note: AGPL relicense came later; concentrated copyright made it possible.
+  form_snapshot: 2014
+  fund_snapshot: 2017
+  outcome_resolved: true
+  resolution: sustained scale, late-stage priced rounds
+- repo: getsentry/sentry
+  label: commercialized_success
+  company: Sentry
+  form_snapshot: 2012
+  fund_snapshot: 2016
+  outcome_resolved: true
+  resolution: sustained scale, disclosed ARR
+- repo: ClickHouse/ClickHouse
+  label: unresolved
+  company: ClickHouse Inc
+  note: Yandex-originated. Tests whether corporate parentage reads as a fail.
+  form_snapshot: 2019
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: PostHog/posthog
+  label: unresolved
+  company: PostHog
+  form_snapshot: 2020
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: airbytehq/airbyte
+  label: unresolved
+  company: Airbyte
+  form_snapshot: 2020
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: n8n-io/n8n
+  label: unresolved
+  company: n8n
+  form_snapshot: 2019
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: supabase/supabase
+  label: unresolved
+  company: Supabase
+  form_snapshot: 2020
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: dbt-labs/dbt-core
+  label: commercialized_success
+  company: dbt Labs
+  form_snapshot: 2018
+  fund_snapshot: 2020
+  outcome_resolved: true
+  resolution: sustained scale
+- repo: temporalio/temporal
+  label: unresolved
+  company: Temporal
+  note: Uber-originated fork (Cadence). Same parentage test as ClickHouse.
+  form_snapshot: 2019
+  fund_snapshot: 2021
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: calcom/cal.com
+  label: unresolved
+  company: Cal.com
+  note: Commercial intent from day one — tests stated_commercial_intent input.
+  form_snapshot: 2021
+  fund_snapshot: 2022
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+- repo: strapi/strapi
+  label: commercialized_modest
+  company: Strapi
+  form_snapshot: 2017
+  fund_snapshot: 2019
+  outcome_resolved: true
+  resolution: independent, modest
+- repo: directus/directus
+  label: commercialized_modest
+  company: Directus
+  form_snapshot: 2018
+  fund_snapshot: 2020
+  outcome_resolved: true
+  resolution: independent, modest
+- repo: minio/minio
+  label: commercialized_modest
+  company: MinIO
+  note: Later AGPL enforcement and feature removal soured the community.
+  form_snapshot: 2016
+  fund_snapshot: 2017
+  outcome_resolved: true
+  resolution: independent, modest
+- repo: mattermost/mattermost
+  label: commercialized_modest
+  company: Mattermost
+  form_snapshot: 2016
+  fund_snapshot: 2018
+  outcome_resolved: true
+  resolution: independent, modest
+- repo: rethinkdb/rethinkdb
+  label: commercialized_failed
+  outcome: shut down 2016, assets to CNCF
+  note: 'HIGH VALUE CASE. Passes every gate cleanly at 2014 and would likely score well. Failed anyway
+    — beloved by developers, bought by nobody. If the rubric can''t flag this, that is a real and publishable
+    limitation.
+
+    '
+  form_snapshot: 2014
+  fund_snapshot: 2014
+  outcome_resolved: true
+  resolution: shut down 2016
+- repo: meteor/meteor
+  label: commercialized_failed
+  outcome: raised heavily, failed to monetize, pivoted to Apollo
+  note: Apollo (the pivot) succeeded. Project-level fail, team-level success.
+  form_snapshot: 2014
+  fund_snapshot: 2014
+  outcome_resolved: true
+  resolution: failed to monetize, pivoted
+- repo: docker/docker
+  label: commercialized_failed
+  outcome: enterprise business sold to Mirantis 2019
+  note: Enormous adoption, monetization never landed. Adoption ≠ capture.
+  form_snapshot: 2014
+  fund_snapshot: 2015
+  outcome_resolved: true
+  resolution: enterprise sold Mirantis 2019
+- repo: puppetlabs/puppet
+  label: commercialized_failed
+  outcome: acquired by Perforce 2022, modest relative to capital raised
+  form_snapshot: 2011
+  fund_snapshot: 2013
+  outcome_resolved: true
+  resolution: acquired Perforce 2022, modest
+- repo: psf/requests
+  label: never_commercialized
+  note: 'TRUE NEGATIVE for deployment_surface. Adoption exceeds most commercial OSS. Pure library — no
+    hosting surface, no multi-user concept, no paid tier. If this passes gate 3 the gate is broken.
+
+    '
+  form_snapshot: 2013
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: curl/curl
+  label: never_commercialized
+  note: Same as requests. Sponsorship-funded, one maintainer, no company possible.
+  form_snapshot: 2015
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: lodash/lodash
+  label: never_commercialized
+  note: Third library true-negative. Also tests — huge stars, zero commercial path.
+  form_snapshot: 2015
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: obsproject/obs-studio
+  label: never_commercialized
+  note: Desktop app, massive adoption, no multi-user surface. Tests the flag branch.
+  form_snapshot: 2016
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: Homebrew/brew
+  label: never_commercialized
+  note: CLI, stateless, huge. Should flag not pass.
+  form_snapshot: 2015
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: webpack/webpack
+  label: never_commercialized
+  note: OpenCollective-funded. Tests whether collective funding reads correctly.
+  form_snapshot: 2016
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: neovim/neovim
+  label: never_commercialized
+  form_snapshot: 2017
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: elastic/elasticsearch
+  label: adversarial
+  company: Elastic
+  outcome: 'large company, then AWS launched a competing managed service, then the 2021 SSPL relicense,
+    then the OpenSearch fork, then a partial return to AGPL
+
+    '
+  note: 'THE substitution_risk case. Permissive license plus a database surface plus a hyperscaler equals
+    capture. Should score high on adoption and badly on substitution_risk at the 2014 snapshot. If it
+    doesn''t, the dimension is inert.
+
+    '
+  form_snapshot: 2014
+  fund_snapshot: 2014
+  outcome_resolved: true
+  resolution: IPO 2018
+- repo: mongodb/mongo
+  label: commercialized_success
+  company: MongoDB
+  note: 'Same pressure as Elastic, survived it, wrote SSPL in response. Tests whether substitution_risk
+    over-penalizes — high risk did not prevent a large outcome.
+
+    '
+  form_snapshot: 2012
+  fund_snapshot: 2013
+  outcome_resolved: true
+  resolution: IPO 2017
+- repo: redis/redis
+  label: adversarial
+  company: Redis Ltd
+  outcome: cache surface, heavy hyperscaler resale, 2024 relicense, Valkey fork
+  note: 'Third instance. Three cases means the pattern is testable rather than anecdotal. Also a maintainer_profile
+    case — antirez left in 2020.
+
+    '
+  form_snapshot: 2015
+  fund_snapshot: 2015
+  outcome_resolved: true
+  resolution: sustained scale
+- repo: apache/kafka
+  label: adversarial
+  company: Confluent
+  expected_rubric_output: FAIL at gate 1 (foundation-owned)
+  actual_outcome: one of the largest OSS companies ever built
+  note: 'THE case that may force a gate redesign. Foundation ownership blocks owning the project, not
+    building a company beside it. See license.open_question.
+
+    '
+  form_snapshot: 2014
+  fund_snapshot: 2015
+  outcome_resolved: true
+  resolution: Confluent IPO 2021
+- repo: prometheus/prometheus
+  label: adversarial
+  expected_rubric_output: FAIL at gate 1 (CNCF)
+  actual_outcome: value captured by Grafana Labs, a third party
+  note: Second instance of the Kafka pattern. Two is a design problem, not noise.
+  form_snapshot: 2016
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: sourcegraph/sourcegraph
+  label: adversarial
+  outcome: commercialized, then closed the source in 2024
+  note: Tests whether "commercial success" and "OSS success" are the same label.
+  form_snapshot: 2018
+  fund_snapshot: 2019
+  outcome_resolved: true
+  resolution: closed source 2024
+- repo: hashicorp/terraform
+  label: adversarial
+  outcome: HashiCorp → IBM; BSL relicense 2023 triggered the OpenTofu fork
+  note: 'Success that ended in a license change and a community fork. Ask whether the rubric should predict
+    THAT, or only predict the company forming.
+
+    '
+  form_snapshot: 2015
+  fund_snapshot: 2016
+  outcome_resolved: true
+  resolution: IPO 2021, acquired IBM 2025
+- repo: owncloud/core
+  label: adversarial
+  outcome: founder left, forked to Nextcloud, ownCloud eventually to Kiteworks
+  note: 'The fork beat the original. Tests maintainer_profile: the signal was in the person, not the repo
+    — which is the whole thesis of this dimension.
+
+    '
+  form_snapshot: 2014
+  fund_snapshot: 2014
+  outcome_resolved: true
+  resolution: acquired Kiteworks
+- repo: audacity/audacity
+  label: adversarial
+  outcome: acquired by Muse Group 2021; telemetry backlash
+  note: Acquisition without commercialization. Tests what "success" means here.
+  form_snapshot: 2019
+  fund_snapshot: null
+  fund_mode: gate4_fail_no_entity
+- repo: gitlabhq/gitlabhq
+  label: commercialized_success
+  form_snapshot: 2013
+  fund_snapshot: 2015
+  surface: server
+  entity_at_snapshot: funded_company
+  note: Glaring omission from v1. Open-core canon and an IPO.
+  outcome_resolved: true
+  resolution: IPO 2021
+- repo: cockroachdb/cockroach
+  label: commercialized_success
+  form_snapshot: 2015
+  fund_snapshot: 2017
+  surface: database
+  entity_at_snapshot: funded_company
+  note: BSL relicense 2019. Pairs with Terraform as a relicense case.
+  outcome_resolved: true
+  resolution: sustained scale
+- repo: basho/riak
+  label: commercialized_failed
+  form_snapshot: 2011
+  fund_snapshot: 2013
+  surface: database
+  entity_at_snapshot: funded_company
+  note: HIGH VALUE NEGATIVE. Heavy raise, NoSQL peak, assets sold 2017. The single best test of whether
+    the rubric can say no.
+  outcome_resolved: true
+  resolution: assets sold 2017
+- repo: chef/chef
+  label: commercialized_modest
+  form_snapshot: 2011
+  fund_snapshot: 2014
+  surface: server
+  entity_at_snapshot: funded_company
+  note: Direct Puppet comparable. Modest exit to Progress.
+  outcome_resolved: true
+  resolution: acquired Progress 2020, modest
+- repo: dcos/dcos
+  label: commercialized_failed
+  form_snapshot: 2016
+  fund_snapshot: 2017
+  surface: server
+  entity_at_snapshot: funded_company
+  note: Mesosphere/D2iQ. Lost the orchestration category to Kubernetes outright.
+  outcome_resolved: true
+  resolution: D2iQ shut down 2023
+- repo: etcd-io/etcd
+  label: commercialized_modest
+  form_snapshot: 2015
+  fund_snapshot: 2016
+  surface: database
+  entity_at_snapshot: funded_company
+  note: CoreOS. Critical infrastructure, modest acquisition. Adoption did not equal capture.
+  outcome_resolved: true
+  resolution: CoreOS acquired Red Hat 2018, modest
+- repo: influxdata/influxdb
+  label: commercialized_modest
+  form_snapshot: 2015
+  fund_snapshot: 2017
+  surface: database
+  entity_at_snapshot: funded_company
+  note: Large raise, real adoption, outcome modest relative to capital.
+  outcome_resolved: true
+  resolution: independent, modest vs capital raised
+- repo: trinodb/trino
+  label: unresolved
+  form_snapshot: 2019
+  fund_snapshot: 2021
+  surface: server
+  entity_at_snapshot: funded_company
+  note: Starburst. Facebook-origin project commercialized by outsiders — a fund-mode pattern form mode
+    cannot see.
+  outcome_resolved: false
+  resolution: UNRESOLVED — labelled on funding/momentum, not outcome
+  label_provisional: commercialized_success
+open_issues:
+- id: point_in_time_data
+  severity: blocking
+  detail: 'GHArchive (BigQuery, events from 2011) is the only practical source for historical GitHub state.
+    Reconstruct what you can from git directly — commit and PR history, contributor concentration, license
+    — and exclude the rest from the backtest rather than back-filling with today''s values. Silently using
+    present-day dependents on a 2014 snapshot invalidates the entire run.
+
+    '
+- id: survivorship
+  severity: known
+  detail: 'Projects that died before commercialization are systematically missing — no company, no press,
+    no memory. The never_commercialized set here is all large and living. Consider mining GitHub''s archived-repo
+    population from 2014-2016 for genuinely dead candidates.
+
+    '
+- id: sample_size
+  severity: known
+  detail: 'n=30 supports a directional claim, not a p-value. Say "the rubric separates these 30" and nothing
+    stronger. Resist the significance test.
+
+    '
+fund_mode_note: In fund mode the never_commercialized group (requests, curl, lodash, brew, neovim, obs,
+  webpack, audacity, prometheus) fails gate 4 for absence of an entity and never reaches scoring. The
+  fund-mode contrast is therefore success vs modest/failed among companies that DID exist. v1 had only
+  four negatives and all were famous; the eight additions above target that survivorship gap, Riak especially.
+labelling_rule: 'A label counts only if the outcome RESOLVED — IPO, acquisition, shutdown, or sustained
+  disclosed scale — and the fund_snapshot is at least five years old. The v1 set failed this: successes
+  had median fund_snapshot 2021 against 2014 for failures, so vintage separated the classes almost perfectly
+  and any model would have learned ''later is better''. The 2021 cohort was labelled success on funding
+  and momentum, which is precisely the evidence RethinkDB had in 2014. Those entries are now ''unresolved''
+  and excluded from scoring runs; their prior labels are retained in label_provisional for a re-run in
+  2027.'

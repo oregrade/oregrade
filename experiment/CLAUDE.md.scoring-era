@@ -1,0 +1,109 @@
+# oregrade — Claude Code working brief
+
+Scores whether an open source project can support a company. Not a health score:
+health tools measure whether a project is well-run, this measures whether it is
+commercially takeable. Cost-ordered gates short-circuit, survivors get scored.
+
+Default mode is `fund` (underwriting a company that exists), not `form` (creating
+one). That was set on evidence — see `audience_modes.default_rationale` in the
+rubric. Do not change it.
+
+---
+
+## THE ONE HARD RULE
+
+**Nothing in `src/` may read `benchmarks/outcomes.yaml`.** Ever. Not to check a
+result, not to "validate," not in a test fixture.
+
+The project's only real claim is that the rubric was built without knowledge of
+outcomes and then tested against them. If scoring code sees outcomes, thresholds
+get tuned toward them — not deliberately, just by iterating until the numbers
+look good. That is p-hacking, and it makes the published result worthless.
+
+Enforced structurally, not by intention:
+
+```
+benchmarks/
+  projects.yaml     repo, fund_snapshot, surface, entity_at_snapshot   ← src/ MAY read
+  outcomes.yaml     repo, label, resolution                            ← src/ MAY NOT read
+src/                scoring. imports projects.yaml only.
+evaluate.py         top level. the ONLY file that opens outcomes.yaml.
+runs/run-001.json   scores, committed BEFORE evaluate.py is written
+```
+
+Add a test that fails if any file under `src/` contains the string `outcomes`.
+Split `labels.yaml` into those two files as step one.
+
+Order of work: build scorer → run on all 25 → **commit `runs/run-001.json`** →
+only then write `evaluate.py`. If run-001 separates the classes poorly, that is
+the finding. Record it and do not retune. Any later tuning pass gets its own run
+file and a one-line note saying what changed and why.
+
+---
+
+## State
+
+Working:
+- `spike_pit.py` — point-in-time reconstruction from blobless clones. Proven on
+  3 repos. This is the core technical bet and it holds.
+- `gates.py` — gates 1–4 at a date. Ran across 34 projects.
+- `rubric/default.yaml` — gates, weights, rationale. Fund mode default.
+- `benchmarks/labels.yaml` — 25 resolved projects. Needs splitting (see above).
+
+Broken or unverified:
+- **License detector has no tests.** It read vendored dependency licenses via
+  `ls-tree -r` and marked Terraform as AGPL; now restricted to root level, still
+  untested. Needs a fixture set with known-license repos. Highest-priority bug.
+- **Merge-commit PR proxy is unreliable.** Returns ~0 on squash-merge repos.
+  PR velocity is gate 2's main input and is NOT cleanly reconstructable from git.
+  Either take a GHArchive dependency or substitute commit velocity in the
+  backtest and document the substitution.
+- ClickHouse clone exceeded sandbox disk. Should be fine locally.
+- `sourcegraph/sourcegraph` is no longer publicly cloneable — that is the outcome
+  it was labelled for. Leave it as `clone_unavailable`.
+
+---
+
+## First task
+
+Extract point-in-time features at each project's `fund_snapshot` and score all 25.
+
+Reconstructable from a clone (use these):
+- contributor concentration (top-1, top-3 commit share)
+- commit velocity trailing 90d; momentum (trailing 90d vs prior 90d)
+- new-author count trailing 12mo; external contributor ratio
+- project age at snapshot
+- license at snapshot
+- README at snapshot → commercial-intent and production-user signals
+
+NOT reconstructable (exclude from the backtest even though the live tool uses
+them): dependent counts, download trends, hyperscaler catalogs, GitHub issue
+response latency.
+
+This makes run-001 a narrower test than the rubric implies, and the result is
+worth knowing either way. If git-only features separate `commercialized_success`
+from `commercialized_modest`, the tool needs no API keys and no rate limits —
+a better product than the one originally scoped. If they do not, the signal
+lives entirely in API-dependent features and the fetcher work is unavoidable.
+
+Primary comparison is **success vs modest** — those two classes are
+vintage-matched (median fund_snapshot 2016.5 vs 2017). Success-vs-failed still
+carries a vintage skew (failed median 2014) and is the weaker test. Report both,
+lead with the first.
+
+---
+
+## Out of scope
+
+Do not modify without being asked:
+- rubric weights, gate thresholds, or gate ordering
+- any label, resolution, or snapshot year in the benchmark set
+- the `fund` default
+
+These are judgment calls with reasoning attached, and several were reversed once
+already on evidence. If something looks wrong, say so — do not fix it silently.
+
+Also out of scope for now: web UI, ecosystem-wide crawling, alerting, any handling
+of maintainer contact data. That last one stays out permanently — harvesting
+contributor emails is both a GDPR exposure and the fastest way to make the OSS
+community hostile to the project.

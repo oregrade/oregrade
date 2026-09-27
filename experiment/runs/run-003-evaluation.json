@@ -1,0 +1,415 @@
+{
+  "evaluates": "run-003",
+  "run_generated_utc": "2026-08-16T13:24:03+00:00",
+  "rubric_version": "0.3.0",
+  "preregistration_committed_at": "2026-08-15",
+  "threshold": 0.75,
+  "metric": "AUC by rank, ties 0.5, on backtested_core scores",
+  "primary": {
+    "comparison": "commercialized_success vs commercialized_modest",
+    "n_positive": 6,
+    "n_negative": 7,
+    "auc": 0.2857142857142857,
+    "meets_threshold": false,
+    "confidence_interval": {
+      "lo": 0.0476,
+      "hi": 0.619,
+      "level": "95%",
+      "resamples": 20000,
+      "seed": 20260816,
+      "median": 0.2857
+    },
+    "discordant_or_tied_pairs": [
+      {
+        "success": "gitlabhq/gitlabhq",
+        "success_score": 31.35,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "gitlabhq/gitlabhq",
+        "success_score": 31.35,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "dbt-labs/dbt-core",
+        "success_score": 30.41,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "dbt-labs/dbt-core",
+        "success_score": 30.41,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "dbt-labs/dbt-core",
+        "success_score": 30.41,
+        "other": "influxdata/influxdb",
+        "other_score": 31.3,
+        "kind": "inverted"
+      },
+      {
+        "success": "dbt-labs/dbt-core",
+        "success_score": 30.41,
+        "other": "strapi/strapi",
+        "other_score": 30.45,
+        "kind": "inverted"
+      },
+      {
+        "success": "cockroachdb/cockroach",
+        "success_score": 29.46,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "cockroachdb/cockroach",
+        "success_score": 29.46,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "cockroachdb/cockroach",
+        "success_score": 29.46,
+        "other": "influxdata/influxdb",
+        "other_score": 31.3,
+        "kind": "inverted"
+      },
+      {
+        "success": "cockroachdb/cockroach",
+        "success_score": 29.46,
+        "other": "strapi/strapi",
+        "other_score": 30.45,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "influxdata/influxdb",
+        "other_score": 31.3,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "strapi/strapi",
+        "other_score": 30.45,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "etcd-io/etcd",
+        "other_score": 27.99,
+        "kind": "inverted"
+      },
+      {
+        "success": "grafana/grafana",
+        "success_score": 27.46,
+        "other": "minio/minio",
+        "other_score": 27.81,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "influxdata/influxdb",
+        "other_score": 31.3,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "strapi/strapi",
+        "other_score": 30.45,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "etcd-io/etcd",
+        "other_score": 27.99,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "minio/minio",
+        "other_score": 27.81,
+        "kind": "inverted"
+      },
+      {
+        "success": "getsentry/sentry",
+        "success_score": 23.3,
+        "other": "directus/directus",
+        "other_score": 23.66,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "mattermost/mattermost",
+        "other_score": 32.55,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "chef/chef",
+        "other_score": 32.14,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "influxdata/influxdb",
+        "other_score": 31.3,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "strapi/strapi",
+        "other_score": 30.45,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "etcd-io/etcd",
+        "other_score": 27.99,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "minio/minio",
+        "other_score": 27.81,
+        "kind": "inverted"
+      },
+      {
+        "success": "mongodb/mongo",
+        "success_score": 15.4,
+        "other": "directus/directus",
+        "other_score": 23.66,
+        "kind": "inverted"
+      }
+    ]
+  },
+  "secondary": {
+    "comparison": "commercialized_success vs commercialized_failed",
+    "n_positive": 6,
+    "n_negative": 6,
+    "auc": 0.5,
+    "caveat": "weaker; failed class skews earlier in vintage"
+  },
+  "vintage_check": {
+    "all_scored": {
+      "spearman": 0.1594,
+      "pearson": 0.2226,
+      "n": 24
+    },
+    "primary_subset": {
+      "spearman": 0.1034,
+      "pearson": 0.3261,
+      "n": 13
+    },
+    "median_fund_snapshot_by_label": {
+      "commercialized_success": 2016.5,
+      "commercialized_modest": 2017,
+      "commercialized_failed": 2014.0,
+      "adversarial": 2015
+    }
+  },
+  "ranking": [
+    {
+      "repo": "hashicorp/terraform",
+      "core_score": 38.06,
+      "label": "adversarial",
+      "fund_snapshot": 2016
+    },
+    {
+      "repo": "docker/docker",
+      "core_score": 32.93,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2015
+    },
+    {
+      "repo": "mattermost/mattermost",
+      "core_score": 32.55,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2018
+    },
+    {
+      "repo": "chef/chef",
+      "core_score": 32.14,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2014
+    },
+    {
+      "repo": "meteor/meteor",
+      "core_score": 31.6,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2014
+    },
+    {
+      "repo": "owncloud/core",
+      "core_score": 31.46,
+      "label": "adversarial",
+      "fund_snapshot": 2014
+    },
+    {
+      "repo": "gitlabhq/gitlabhq",
+      "core_score": 31.35,
+      "label": "commercialized_success",
+      "fund_snapshot": 2015
+    },
+    {
+      "repo": "influxdata/influxdb",
+      "core_score": 31.3,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2017
+    },
+    {
+      "repo": "strapi/strapi",
+      "core_score": 30.45,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2019
+    },
+    {
+      "repo": "dbt-labs/dbt-core",
+      "core_score": 30.41,
+      "label": "commercialized_success",
+      "fund_snapshot": 2020
+    },
+    {
+      "repo": "cockroachdb/cockroach",
+      "core_score": 29.46,
+      "label": "commercialized_success",
+      "fund_snapshot": 2017
+    },
+    {
+      "repo": "etcd-io/etcd",
+      "core_score": 27.99,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2016
+    },
+    {
+      "repo": "minio/minio",
+      "core_score": 27.81,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2017
+    },
+    {
+      "repo": "elastic/elasticsearch",
+      "core_score": 27.54,
+      "label": "adversarial",
+      "fund_snapshot": 2014
+    },
+    {
+      "repo": "grafana/grafana",
+      "core_score": 27.46,
+      "label": "commercialized_success",
+      "fund_snapshot": 2017
+    },
+    {
+      "repo": "basho/riak",
+      "core_score": 24.66,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2013
+    },
+    {
+      "repo": "rethinkdb/rethinkdb",
+      "core_score": 23.8,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2014
+    },
+    {
+      "repo": "directus/directus",
+      "core_score": 23.66,
+      "label": "commercialized_modest",
+      "fund_snapshot": 2020
+    },
+    {
+      "repo": "getsentry/sentry",
+      "core_score": 23.3,
+      "label": "commercialized_success",
+      "fund_snapshot": 2016
+    },
+    {
+      "repo": "puppetlabs/puppet",
+      "core_score": 21.46,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2013
+    },
+    {
+      "repo": "apache/kafka",
+      "core_score": 19.21,
+      "label": "adversarial",
+      "fund_snapshot": 2015
+    },
+    {
+      "repo": "redis/redis",
+      "core_score": 18.02,
+      "label": "adversarial",
+      "fund_snapshot": 2015
+    },
+    {
+      "repo": "dcos/dcos",
+      "core_score": 17.0,
+      "label": "commercialized_failed",
+      "fund_snapshot": 2017
+    },
+    {
+      "repo": "mongodb/mongo",
+      "core_score": 15.4,
+      "label": "commercialized_success",
+      "fund_snapshot": 2013
+    }
+  ],
+  "excluded_from_evaluation": [
+    {
+      "repo": "sourcegraph/sourcegraph",
+      "label": "adversarial",
+      "reason": "not scored in the run"
+    }
+  ],
+  "power": "n=13 across the primary comparison. This is a directional check and CANNOT support a significance claim. Any writeup must say so in those words. No p-value will be computed or quoted.\n",
+  "stop_rule": "If the threshold is not met, the finding is recorded and published. No retuning against outcomes. Any later variant is run-003 with its own pre-registration.\n"
+}

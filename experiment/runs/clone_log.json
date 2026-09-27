@@ -1,0 +1,184 @@
+[
+  {
+    "repo": "grafana/grafana",
+    "path": "/tmp/oregrade-clones/grafana__grafana",
+    "elapsed_s": 9.8,
+    "status": "ok",
+    "size_mb": 215
+  },
+  {
+    "repo": "getsentry/sentry",
+    "path": "/tmp/oregrade-clones/getsentry__sentry",
+    "elapsed_s": 14.4,
+    "status": "ok",
+    "size_mb": 277
+  },
+  {
+    "repo": "dbt-labs/dbt-core",
+    "path": "/tmp/oregrade-clones/dbt-labs__dbt-core",
+    "elapsed_s": 1.7,
+    "status": "ok",
+    "size_mb": 24
+  },
+  {
+    "repo": "strapi/strapi",
+    "path": "/tmp/oregrade-clones/strapi__strapi",
+    "elapsed_s": 3.1,
+    "status": "ok",
+    "size_mb": 58
+  },
+  {
+    "repo": "directus/directus",
+    "path": "/tmp/oregrade-clones/directus__directus",
+    "elapsed_s": 2.0,
+    "status": "ok",
+    "size_mb": 38
+  },
+  {
+    "repo": "minio/minio",
+    "path": "/tmp/oregrade-clones/minio__minio",
+    "elapsed_s": 1.8,
+    "status": "ok",
+    "size_mb": 16
+  },
+  {
+    "repo": "mattermost/mattermost",
+    "path": "/tmp/oregrade-clones/mattermost__mattermost",
+    "elapsed_s": 4.2,
+    "status": "ok",
+    "size_mb": 90
+  },
+  {
+    "repo": "rethinkdb/rethinkdb",
+    "path": "/tmp/oregrade-clones/rethinkdb__rethinkdb",
+    "elapsed_s": 2.0,
+    "status": "ok",
+    "size_mb": 28
+  },
+  {
+    "repo": "meteor/meteor",
+    "path": "/tmp/oregrade-clones/meteor__meteor",
+    "elapsed_s": 2.3,
+    "status": "ok",
+    "size_mb": 42
+  },
+  {
+    "repo": "docker/docker",
+    "path": "/tmp/oregrade-clones/docker__docker",
+    "elapsed_s": 4.2,
+    "status": "ok",
+    "size_mb": 89
+  },
+  {
+    "repo": "puppetlabs/puppet",
+    "path": "/tmp/oregrade-clones/puppetlabs__puppet",
+    "elapsed_s": 2.2,
+    "status": "ok",
+    "size_mb": 40
+  },
+  {
+    "repo": "elastic/elasticsearch",
+    "path": "/tmp/oregrade-clones/elastic__elasticsearch",
+    "elapsed_s": 24.0,
+    "status": "ok",
+    "size_mb": 554
+  },
+  {
+    "repo": "mongodb/mongo",
+    "path": "/tmp/oregrade-clones/mongodb__mongo",
+    "elapsed_s": 13.3,
+    "status": "ok",
+    "size_mb": 284
+  },
+  {
+    "repo": "redis/redis",
+    "path": "/tmp/oregrade-clones/redis__redis",
+    "elapsed_s": 1.1,
+    "status": "ok",
+    "size_mb": 17
+  },
+  {
+    "repo": "apache/kafka",
+    "path": "/tmp/oregrade-clones/apache__kafka",
+    "elapsed_s": 3.5,
+    "status": "ok",
+    "size_mb": 72
+  },
+  {
+    "repo": "sourcegraph/sourcegraph",
+    "path": "/tmp/oregrade-clones/sourcegraph__sourcegraph",
+    "elapsed_s": 0.3,
+    "status": "clone_unavailable",
+    "stderr": "remote: Repository not found.\nfatal: repository 'https://github.com/sourcegraph/sourcegraph.git/' not found"
+  },
+  {
+    "repo": "hashicorp/terraform",
+    "path": "/tmp/oregrade-clones/hashicorp__terraform",
+    "elapsed_s": 2.5,
+    "status": "ok",
+    "size_mb": 50
+  },
+  {
+    "repo": "owncloud/core",
+    "path": "/tmp/oregrade-clones/owncloud__core",
+    "elapsed_s": 3.8,
+    "status": "ok",
+    "size_mb": 91
+  },
+  {
+    "repo": "gitlabhq/gitlabhq",
+    "path": "/tmp/oregrade-clones/gitlabhq__gitlabhq",
+    "elapsed_s": 23.0,
+    "status": "ok",
+    "size_mb": 425
+  },
+  {
+    "repo": "cockroachdb/cockroach",
+    "path": "/tmp/oregrade-clones/cockroachdb__cockroach",
+    "elapsed_s": 12.6,
+    "status": "ok",
+    "size_mb": 317
+  },
+  {
+    "repo": "basho/riak",
+    "path": "/tmp/oregrade-clones/basho__riak",
+    "elapsed_s": 0.7,
+    "status": "ok",
+    "size_mb": 4
+  },
+  {
+    "repo": "chef/chef",
+    "path": "/tmp/oregrade-clones/chef__chef",
+    "elapsed_s": 3.1,
+    "status": "ok",
+    "size_mb": 47
+  },
+  {
+    "repo": "dcos/dcos",
+    "path": "/tmp/oregrade-clones/dcos__dcos",
+    "elapsed_s": 0.8,
+    "status": "ok",
+    "size_mb": 9
+  },
+  {
+    "repo": "etcd-io/etcd",
+    "path": "/tmp/oregrade-clones/etcd-io__etcd",
+    "elapsed_s": 1.7,
+    "status": "ok",
+    "size_mb": 25
+  },
+  {
+    "repo": "influxdata/influxdb",
+    "path": "/tmp/oregrade-clones/influxdata__influxdb",
+    "elapsed_s": 2.4,
+    "status": "ok",
+    "size_mb": 52
+  },
+  {
+    "repo": "calcom/cal.com",
+    "path": "/tmp/oregrade-clones/calcom__cal.com",
+    "elapsed_s": 2.9,
+    "status": "ok",
+    "size_mb": 51
+  }
+]

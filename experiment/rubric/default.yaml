@@ -1,0 +1,706 @@
+# oregrade — commercial viability rubric
+# version 0.2.0 — UNCALIBRATED. Weights are priors, not findings.
+# Do not cite a score from this file until it has been run across
+# benchmarks/projects.yaml. This file does not reference benchmarks/outcomes.yaml
+# and must not: the rubric is built blind and tested afterwards.
+
+version: 0.3.0
+name: default
+changelog:
+  0.3.0: >
+    Post-run-002 decisions. The rubric splits into backtested_core and
+    live_extension, scored and reported separately and never blended. Adoption
+    is rebuilt on GHArchive actor identity — a person who files a bug is a user,
+    and IssuesEvent/ForkEvent carry that from 2011 — correcting the run-002
+    claim that adoption could not be improved point-in-time. Coverage acquires a
+    two-part criterion: a per-project floor and a median run basis.
+    entity_employs_primary_maintainers and entity_controls_trademark move to
+    live_extension.
+  0.2.0: >
+    Post-run-001 resolutions. adoption_friction scale stated; gate 3 adopts the
+    annotation vocabulary; surface_is_natural_managed_service becomes an explicit
+    per-surface table; gate 4 fund mode reduced to entity presence with its two
+    unreconstructable conditions moved into maintainer_profile as live_tool_only;
+    gate 1 strongest_position deleted; missing-input rule changed from weight
+    redistribution to a capped score reported with coverage; calibration
+    acceptance rewritten for fund mode.
+audience: >
+  investors and operators assessing whether an open source project can support a
+  company — whether by forming one around it, funding one already forming, or
+  underwriting one that exists
+audience_modes:
+  note: >
+    Three gates and one scoring dimension invert depending on who is asking. This
+    is not a wording difference — the same evidence points opposite directions for
+    a firm forming a company and a firm buying into one. Set `mode` and the
+    affected rules flip; leaving it unset runs `form`, which is the stricter read.
+  mode: fund
+  default_rationale: >
+    Set to `fund` on evidence, not preference. Gate-4 analysis across the benchmark
+    set (see gate_run_001.json) found that 10 of 13 successful projects had a funded
+    company at or before their first public commit — PostHog, Airbyte, Supabase,
+    Temporal, MinIO, Mattermost, Meteor, Docker, Puppet. Most successful commercial
+    OSS was company-first. Form mode is therefore fishing in a genuinely small pond
+    and yields n=5 survivors, which cannot falsify a scoring layer. Fund mode has
+    the data. Form mode remains supported and is the stricter read.
+  form:
+    description: forming a new company around a project with no company yet
+    commercialization_status: existing funded company is a FAIL
+    contributor_concentration: higher_is_better    # fewer people to recruit, cleaner rights
+    counterparty_scope: individual maintainers to be approached
+  fund:
+    description: investing in a company already built on or around a project
+    commercialization_status: existing funded company is the TARGET — flag-only
+    contributor_concentration: higher_is_worse     # key-man risk in an existing business
+    counterparty_scope: the operating entity and its principals
+  underwrite:
+    description: diligence on a project a portfolio company depends on
+    commercialization_status: not evaluated
+    contributor_concentration: higher_is_worse     # bus factor is the actual question
+    counterparty_scope: not evaluated
+
+maintainer_note: >
+  Gates are cost-ordered and short-circuit. A project that fails gate N is never
+  evaluated on gates N+1..k, and never scored. The report records the stop point.
+  Cost tiers: free (local/cached), cheap (1 API call), metered (paid or rate-limited).
+
+# ---------------------------------------------------------------------------
+# GATES — ordered, short-circuiting
+# ---------------------------------------------------------------------------
+
+gates:
+
+  - id: license
+    order: 1
+    cost: free
+    sources: [spdx, github_license, repo_files]
+    question: Can the rights be consolidated into a single commercial owner?
+    rationale: >
+      The test is NOT permissive-vs-copyleft. Strong copyleft with concentrated
+      copyright is one of the best possible setups — a single owner can dual-license,
+      which is the classic open-core structure (MySQL, Qt). What kills the deal is
+      rights you can never assemble: foundation-assigned copyright, or a CLA that
+      already grants exclusive commercial rights to somebody else.
+    agpl_note: >
+      AGPL is deliberately NOT a fail here, and the reasoning matters because the
+      house position at many firms says otherwise. AGPL suppresses enterprise
+      adoption — Google bans it outright — but that is a funnel problem, not an
+      ownership problem, so it belongs in scoring (see adoption_friction) rather
+      than in a gate. The same clause that scares legal departments is what makes
+      the project sellable: the copyright holder retains the exclusive right to
+      dual-license, which is precisely the lever being underwritten. Grafana went
+      AGPL and is in the benchmark set as a success; gate it out and the rubric
+      fails its own backtest on the most recognizable entry.
+
+      The case where AGPL genuinely IS fatal is AGPL with DIFFUSE copyright and no
+      CLA. There you inherit all of the adoption friction and none of the
+      dual-licensing upside, with no path to fix it — you cannot relicense and you
+      cannot sell exceptions. That is the failure the "AGPL is a non-starter"
+      argument is actually right about, and it is caught below by copyright_holders,
+      not by the license identifier.
+    pass:
+      - spdx_id in [MIT, Apache-2.0, BSD-2-Clause, BSD-3-Clause, ISC, MPL-2.0]
+      - spdx_id in [GPL-3.0, AGPL-3.0, GPL-2.0] AND copyright_holders <= 5
+    flag:
+      - spdx_id is copyleft AND copyright_holders between 6 and 25
+        # relicensing is possible but becomes a project of its own; price it in
+      - dual_licensed_already
+    fail:
+      - no_license_file
+      - copyright_assigned_to: [ASF, CNCF, LF, Eclipse, Software Freedom Conservancy]
+      - cla_grants_exclusive_rights_to_third_party
+      - spdx_id is copyleft AND copyright_holders > 25 AND NOT has_cla
+        # the real AGPL fail: adoption friction with no relicensing path out
+      - license in [BSL-1.1, SSPL, Elastic-2.0, Commons-Clause]
+        # a source-available relicense means someone already commercialized this
+    fund_mode:
+      note: >
+        In fund mode this gate nearly dissolves, and that resolves the Kafka
+        problem rather than working around it. The question is no longer "can
+        rights be consolidated" — Confluent never needed Apache's copyright. It
+        becomes "what rights position does the company hold," which is a flag
+        generator feeding substitution_risk, not a filter. Only a total absence
+        of licensing is disqualifying.
+      fail:
+        - no_license_file
+      flag:
+        - foundation_owned
+          # company is viable beside the project, but its moat is brand and
+          # distribution rather than IP. Underwrite that, do not assume it.
+        - permissive AND surface_is_natural_managed_service
+          # anyone may resell it; routes directly into substitution_risk
+        - license_changed_within_24mo
+          # a relicense means the company already felt the pressure and reacted
+      # `strongest_position: copyleft AND entity_holds_copyright` was removed in
+      # 0.2.0. It was neither pass, flag nor fail, so it scored nothing, and the
+      # property it named already reaches the total through
+      # substitution_risk.license_hosting_protection.
+
+    open_question: >
+      RESOLVED for fund mode by fund_mode above; still open for form mode.
+      Kafka fails this gate (Apache-owned) yet Confluent is one of the largest OSS
+      companies ever. Foundation ownership blocks you from owning the PROJECT; it
+      does not block building a company adjacent to it. If the backtest shows this
+      gate producing false negatives on foundation projects, split it into
+      "can own the project" vs "can own a company near the project."
+
+  - id: liveness
+    order: 2
+    cost: cheap
+    sources: [github_api, git_log]
+    question: Is anyone home?
+    rationale: >
+      This gate asks whether the project is alive, not whether it is popular.
+      Stars are deliberately excluded from the math — gameable, lagging, and
+      near-orthogonal to deployment. Merged PR velocity and response latency are
+      what actually distinguish a maintained project from an abandoned one.
+      Thresholds are intentionally low: a viable project can be small.
+    pass:
+      - merged_prs_trailing_90d >= 3
+      - last_commit_days_ago <= 90
+      - median_issue_first_response_days <= 30
+    flag:
+      - maintainer_seeking_successor
+        # not a fail — this is sometimes the cleanest possible opening
+      - single_committer AND merged_prs_trailing_90d >= 3
+    fail:
+      - archived
+      - last_commit_days_ago > 180
+      - merged_prs_trailing_90d == 0
+    excluded_signals:
+      stars: context only, never scored
+      forks: noisy, dominated by course assignments and CI
+
+  - id: deployment_surface
+    order: 3
+    cost: cheap
+    sources: [readme, repo_structure, llm_classifier]
+    question: >
+      Is there a version of this that several people in one organization use
+      together, and would someone pay not to run it themselves?
+    rationale: >
+      This kills more candidates than every other gate combined, and almost nobody
+      screens for it up front. A library has no hosting surface and no multi-user
+      concept, so there is no paid tier to build later. requests and curl have more
+      adoption than most commercial OSS and were never commercializable.
+    vocabulary_note: >
+      0.2.0 adopts the surface vocabulary used in benchmarks/projects.yaml
+      verbatim. The rubric was written before the annotations existed and used
+      prose conditions — "cli AND has_persistent_state" — that no annotation
+      ever produced. The annotations are the ground truth; the rubric now names
+      the same tokens so a surface value can be matched without translation.
+    pass:
+      - surface in [server, daemon, database, agent, collector, scheduler, proxy]
+      - surface == cli_stateful          # was: cli AND has_persistent_state
+      - surface == object_store
+      - surface == framework_hosted      # was: framework AND has_hosted_runtime_analog
+    flag:
+      - surface == cli_stateless
+      - surface == desktop_app
+    fail:
+      - surface in [library, sdk, spec, dataset, docs, config, dotfiles, awesome_list]
+    notes: >
+      LLM classification off the README is reliable for this. Store the classifier's
+      quoted evidence in the dossier so a human can overrule it in one glance.
+
+  - id: commercialization_status
+    order: 4
+    cost: metered
+    sources: [funding_yml, github_org_type, uspto, domain_whois, readme_links]
+    question: Has someone already taken this?
+    rationale: >
+      Sponsorship is a positive signal, not a negative one — it means the maintainer
+      has already admitted the money problem exists. A two-person consultancy is a
+      flag rather than a fail, because that is frequently the nucleus of a founding
+      team rather than the competition.
+    varies_by_audience: true
+    audience_behaviour:
+      form: as written below — an existing funded company forecloses the opportunity
+      fund: >
+        genuinely inverted, not demoted. The question becomes: does the company
+        that exists actually control what it is selling? Absence of a company is
+        now the fail case — there is nothing to buy — and the failure modes are
+        about rights and capture rather than occupancy.
+      underwrite: gate skipped
+    fund_mode:
+      question: Does a commercial entity exist at the snapshot?
+      reduced_in: 0.2.0
+      reduction_rationale: >
+        This gate previously asked whether the company controls what it sells,
+        and its pass condition required trademark ownership and knowledge of who
+        employs the maintainers. Neither is reconstructable at a past date, so
+        the pass condition never evaluated and the gate silently reduced to
+        entity presence anyway. 0.2.0 says that outright. The two control
+        signals are not discarded — they move to maintainer_profile as
+        live_tool_only inputs, where a missing value renormalises out honestly
+        instead of sitting in a gate as an unreachable condition.
+      pass:
+        - commercial_entity_detected_at_snapshot
+      flag:
+        - entity_is_small_consultancy
+        - entity_is_corporate_parent
+        - entity_type_at_snapshot_unknown
+          # presence established, type not annotated. Retained for future
+          # benchmark entries; see benchmarks/projects.yaml provenance fields.
+      fail:
+        - no_commercial_entity_detected
+          # nothing to invest in — the form-mode pass condition, inverted
+      moved_to_scoring:
+        - entity_controls_trademark          -> maintainer_profile
+        - entity_employs_primary_maintainers -> maintainer_profile
+      not_gated_note: >
+        adoption_captured_by_third_party — the Prometheus/Grafana pattern — was
+        a fail condition here and has no point-in-time source either. It is NOT
+        silently moved: it stays listed as an unimplemented live-tool condition
+        so that its absence is visible rather than forgotten.
+      unimplemented:
+        - adoption_captured_by_third_party
+        - entity_is_sole_cloud_provider AND license_permits_third_party_hosting
+    pass:
+      - no_commercial_entity_detected
+      - github_sponsors_active AND no_commercial_entity_detected
+    flag:
+      - small_consultancy_or_support_business
+      - trademark_filed_by_individual
+      - opencollective_or_foundation_funded
+    fail:
+      - venture_backed_company_operating_on_project
+      - trademark_held_by_operating_company
+      - commercial_cloud_offering_by_project_owner
+    config:
+      include_commercialized: false   # --include-commercialized flips this gate to flag-only
+
+  - id: counterparty
+    order: 5
+    cost: metered
+    scope: "${audience_modes[mode].counterparty_scope}"   # individuals in form mode; the entity in fund mode
+    sources: [consolidated_screening_list, stated_location]
+    question: >
+      For the one or two people who would actually be approached or backed: any
+      restricted-party status, and what is the practical friction of paying,
+      employing, and issuing equity to them?
+    rationale: >
+      Runs last and runs on named people, not on the contributor base. This is
+      ordinary counterparty diligence on an individual, which is defensible and
+      accurate. Demographic filtering on a repository is neither. Nationality and
+      ethnicity are not inputs here and must not be inferred from names, commit
+      timezones, or commit-message language.
+    checks:
+      - restricted_party: screen individual and current employer against CSL
+      - residence: stated_only
+      - friction_estimate: [payment_rails, equity_issuance, visa_path, banking_kyc]
+    output: friction_report      # never a silent zero — a zero teaches nothing
+    fail:
+      - restricted_party_match_confirmed
+    flag:
+      - residence_jurisdiction_in: "${policy.high_friction_jurisdictions}"
+      - sector in [semiconductors, quantum, ai] AND residence_jurisdiction_in: "${policy.oisp_countries_of_concern}"
+    never:
+      - infer residence from timezone
+      - infer nationality from name
+      - infer anything from commit-message language
+    policy_note: >
+      This file ships the MECHANISM. Firm-specific jurisdiction policy belongs in a
+      private overlay (rubric/overlays/), not in the public default. The regulatory
+      surface here moves — OISP is mid-rulemaking under the COINS Act — so treat
+      any list in an overlay as a pointer to counsel, not a substitute for it.
+
+# ---------------------------------------------------------------------------
+# SCORING — runs only on gate survivors
+# ---------------------------------------------------------------------------
+
+scoring:
+  scale: 0-100
+  calibration_status: UNCALIBRATED
+
+  input_availability:
+    note: >
+      Every scoring input carries an availability class. The classes are not
+      interchangeable and collapsing them is how a backtest quietly becomes
+      invalid.
+    classes:
+      reconstructable: available from a blobless clone at the snapshot date
+      external_reconstructable: >
+        available point-in-time, but only from GHArchive (repo events from 2011).
+        Legitimate in a backtest; needs a BigQuery dependency to collect.
+      live_tool_only: >
+        checkable today, never at a past date — trademark registers, employment,
+        cloud catalogues. The live tool uses these. A backtest must not, and
+        must not substitute today's value for the snapshot's.
+      not_reconstructable: no point-in-time source exists at all.
+
+  # -------------------------------------------------------------------------
+  # THE SPLIT (0.3.0). Two instruments, scored separately, never blended.
+  # -------------------------------------------------------------------------
+  instruments:
+    rationale: >
+      Two thirds of the scoring weight had no historical source, and reporting
+      that as a coverage deficiency framed a design fact as a defect. It is not
+      one instrument with missing data; it is two instruments — one that can be
+      backtested and one that cannot — averaged together into a number where
+      the evidenced part and the judgement part are indistinguishable. Splitting
+      them is more honest and a better product: a reader sees which half has
+      evidence behind it.
+    backtested_core:
+      description: >
+        Point-in-time reconstructable. THE ONLY THING AN AUC CLAIM ATTACHES TO.
+      inputs:
+        - contributor_concentration
+        - stated_commercial_intent          # commercial_intent_at_date
+        - responsiveness                    # via gharchive
+        - distinct_non_contributor_issue_reporters_12mo   # via gharchive
+        - issue_reporter_growth_yoy         # via gharchive
+        - fork_velocity_trailing_12mo       # via gharchive
+        - production_mentions
+        - license_hosting_protection
+        - surface_is_natural_managed_service
+      also_core:
+        - adoption_friction   # derived from licence and surface, both reconstructable
+    live_extension:
+      description: >
+        Shipped, useful, and permanently uncalibrated. No AUC claim attaches to
+        any of it, now or later.
+      calibration: none — priors, never tested
+      inputs:
+        - entity_employs_primary_maintainers   # moved from maintainer_profile 0.2.0
+        - entity_controls_trademark            # moved from maintainer_profile 0.2.0
+        - dependent_repo_count
+        - hyperscaler_offers_this_project      # hyperscaler_catalogue_presence
+        - incumbent_oss_alternative_exists
+        - comparable_exits                     # category_timing
+        - category_funding_activity_24mo       # category_timing
+      penalties:
+        - vendor_captured_adoption_share
+      unassigned_note: >
+        incumbent_oss_alternative_exists and vendor_captured_adoption_share were
+        not named in the decision memo's split. Both are not_reconstructable, so
+        they go to live_extension by the same logic as everything else there.
+      dropped_in_0_3_0:
+        - package_download_trend_12mo: >
+            The memo's replacement block for adoption_without_capture.inputs
+            omits it entirely. Followed literally rather than silently re-added.
+            If it should live in live_extension, add it back deliberately.
+    output_rule: >
+      Emit core_score and live_score with their own max_achievable and coverage.
+      NEVER emit a blended number, and never present the live score with the
+      core score's evidential standing.
+
+  coverage_criterion:
+    set_in: 0.3.0
+    project_floor: 0.30        # below this the PROJECT is excluded, not the run
+    run_basis: median          # median across included projects must clear target
+    max_exclusions: 3          # of 25. More than 3 and the RUN fails, not the projects.
+    reporting: >
+      Every exclusion named with its reason in the run file and in any writeup.
+    definition: >
+      Coverage is the fraction of TOTAL rubric input weight actually supplied —
+      core and live together, out of 100. This is the definition the
+      pre-registered target_coverage of 0.36 was set against, and it does not
+      change now that the rubric is split. Redefining coverage as
+      "fraction of core weight supplied" would make the pre-registered bar
+      trivial to clear, which is moving the threshold by another name.
+      core_coverage and live_coverage are reported alongside it as diagnostics
+      and are NOT what the criterion tests.
+    exclusion_caveat: >
+      Excluding on coverage means excluding on a property that may correlate
+      with outcome. Dropping one project from a 13-project primary comparison is
+      a 7.7% change in sample. Whether exclusions skew by class cannot be
+      checked without opening outcomes, so: the floor is pre-registered blind,
+      exclusions are applied mechanically, and after evaluation the writeup
+      reports the class composition of every excluded project, whatever it shows.
+
+  missing_input_rule:
+    changed_in: 0.2.0
+    within_dimension: >
+      Renormalise over the inputs that are available. A dimension resting on one
+      input of three still reports 0-100.
+    across_dimensions: >
+      DO NOT redistribute a dropped dimension's weight. Redistribution makes a
+      project scored on two dimensions numerically comparable to one scored on
+      four, which it is not. A dropped dimension contributes zero, and the
+      maximum achievable total falls by its weight.
+    output_contract: >
+      Emit `score`, `max_achievable` and `coverage` together, always. A score
+      shown without its coverage is a bug in the consumer, not a shortcut.
+    coverage_ceiling_note: >
+      Under point-in-time discipline this rubric cannot exceed roughly 0.37
+      coverage on any backtest: dependent counts, download trends, hyperscaler
+      catalogues and both category_timing inputs have no historical source, and
+      together they are 63 of the 100 weight. That ceiling is a property of the
+      rubric, not of the implementation.
+
+  dimensions:
+
+    - id: adoption_without_capture
+      weight: 30
+      rationale: >
+        Real deployment evidence, discounted by how much of that deployment a
+        vendor already owns. Dependents and download trajectory are the signal;
+        stars are not.
+      rebuilt_in: 0.3.0
+      rebuild_rationale: >
+        The run-002 report claimed this dimension could not be improved
+        point-in-time. That was wrong. GHArchive carries IssuesEvent,
+        IssueCommentEvent, ForkEvent and WatchEvent with actor identity from
+        2011, so a person who files a bug and never commits is a reconstructable
+        USER — which is what production_mentions was reaching for and failing to
+        find. 21 of 24 projects had no "Who's using this" README section at
+        their snapshot because the convention postdates those years; the
+        adoption signal was absent from the README, not absent from history.
+        The dimension goes from 0.20 to 0.80 backtestable weight.
+      inputs:
+        - distinct_non_contributor_issue_reporters_12mo:
+            weight: 0.35
+            source: gharchive
+            availability: external_reconstructable
+            note: a person filing a bug is a user, not a developer
+        - issue_reporter_growth_yoy:
+            { weight: 0.20, source: gharchive, availability: external_reconstructable }
+        - fork_velocity_trailing_12mo:
+            { weight: 0.15, source: gharchive, availability: external_reconstructable }
+        - production_mentions:
+            { weight: 0.10, source: readme_at_date, availability: reconstructable }
+        - dependent_repo_count:
+            { weight: 0.20, source: ecosystems, availability: live_tool_only }
+      non_contributor_definition:
+        rule: never pushed to this repo AS OF THE SNAPSHOT DATE
+        rejected_alternative: never pushed to this repo at any point
+        rationale: >
+          The rejected form looks past the snapshot: someone who first commits
+          two years later would be reclassified as a contributor using
+          information that did not exist at the scoring date. That is lookahead,
+          and it would systematically shrink the user count for exactly the
+          projects that went on to grow a contributor base.
+        identity_space: >
+          Both sides use the GHArchive actor.login, never a git commit email.
+          The committer set is built from PushEvent actors before the snapshot,
+          so there is no login-to-email join to get wrong.
+      degenerate_input_rule:
+        from: decision memo Q3
+        rule: >
+          If the GHArchive inputs land and this dimension still shows fewer than
+          8 distinct values across the corpus, move it to live_extension rather
+          than carry dead weight in a confirmatory run.
+      penalty:
+        - vendor_captured_adoption_share   # live_extension
+        - adoption_friction                # backtested_core
+
+      adoption_friction:
+        scale: dimension_subscore_pre_weight
+        scale_note: >
+          Points are applied to this dimension's 0-100 subscore before the
+          dimension weight is applied. A -15 therefore costs 15 of this
+          dimension's 100, not 15 of the final total.
+        agpl_or_gpl:
+          infrastructure: -15
+          application: -5
+          unknown_surface: -10
+        rationale: >
+          Penalty reflects suppressed enterprise adoption, not ownership risk —
+          ownership is settled at gate 1. The split follows Heather Meeker's
+          distinction: copyleft is materially harder for infrastructure because
+          integrators must modify heavily and will not wade into copyleft analysis
+          to do it, whereas application software is typically standalone and the
+          friction is approval overhead rather than architecture. Meeker's further
+          point is that a "stop" entry in a corporate license policy is not a ban —
+          it means a human has to approve, and a good enough product gets approved.
+          Hence a penalty, not a veto.
+        offset: >
+          Partly self-cancelling when copyright is concentrated: the same clause
+          costing you adoption is the one that makes the software sellable. A
+          project ALREADY on AGPL with consolidated rights is arguably the strongest
+          find in the corpus — the maintainer has already absorbed the adoption hit
+          and made the hard call, and you inherit the dual-licensing lever without
+          having to run a relicensing campaign across a contributor base.
+
+    - id: maintainer_profile
+      weight: 30
+      rationale: >
+        Deliberately inverted from every OSS health tool — but only in `form` mode.
+        When the goal is standing up a new company, high contributor concentration
+        is GOOD: fewer people to convince, cleaner copyright, an obvious founder,
+        and a 200-contributor committee project is uninvestable. In `fund` and
+        `underwrite` modes the standard reading returns and concentration is
+        key-man risk. Same number, opposite sign, set by audience_modes.mode.
+        NOTE: with mode now defaulting to `fund`, the inversion is OFF by default.
+        It was the most distinctive claim in this rubric and it is now opt-in —
+        do not present it as a headline finding without form-mode evidence, which
+        currently stands at n=5.
+      concentration_measure:
+        metric: top1_commit_share
+        settled_in: 0.2.0
+        rationale: >
+          The dimension's stated reason for inverting is key-man risk, which is
+          a top-1 concept: one person leaving. top3_commit_share is recorded on
+          every project as a feature but does not enter the score.
+      inputs_form_mode:
+        - contributor_concentration:
+            { direction: higher_is_better, weight: 0.35, availability: reconstructable }
+        - primary_maintainer_employment:
+            independent_or_consulting: 1.0     # already feels the money problem
+            employed_small_co: 0.6
+            employed_big_tech: 0.4             # quality signal, recruitment friction
+            employed_by_oss_vendor: 0.0
+            weight: 0.35
+            availability: live_tool_only
+        - responsiveness: { weight: 0.15, availability: external_reconstructable }
+        - stated_commercial_intent: { weight: 0.15, availability: reconstructable }
+      inputs_fund_mode_note: >
+        Fund mode carries the two control signals relocated from gate 4 in
+        0.2.0. entity_employs_primary_maintainers REPLACES
+        primary_maintainer_employment here rather than joining it: they are
+        the same fact with opposite signs — form mode wants the maintainer
+        unattached and recruitable, fund mode wants the target company to
+        already employ them — and carrying both would double-count it.
+        These weights are the one part of 0.2.0 not dictated by the decision
+        memo; they are priors on an UNCALIBRATED rubric, same as every other
+        weight in this file.
+      inputs_fund_mode:
+        - contributor_concentration:
+            { direction: higher_is_worse, weight: 0.30, availability: reconstructable,
+              instrument: backtested_core }
+        - entity_employs_primary_maintainers:
+            { weight: 0.25, availability: live_tool_only, moved_from: gate4,
+              instrument: live_extension }
+        - entity_controls_trademark:
+            { weight: 0.15, availability: live_tool_only, moved_from: gate4,
+              instrument: live_extension }
+        - stated_commercial_intent:
+            { weight: 0.15, availability: reconstructable,
+              instrument: backtested_core }
+        - responsiveness:
+            { weight: 0.15, availability: external_reconstructable,
+              instrument: backtested_core }
+
+    - id: substitution_risk
+      weight: 25
+      direction: lower_is_better
+      rationale: >
+        Deliberately NOT a gate. "A large incumbent exists" is true of nearly every
+        category worth entering — Grafana launched into Datadog and Splunk,
+        ClickHouse into Snowflake, Supabase into Firebase, Cal.com into Calendly and
+        Google Calendar. A gate on incumbent presence fails most of the winners in
+        benchmarks/labels.yaml, which disqualifies it as a gate.
+
+        The decisive version is narrower: can a hyperscaler run this as a managed
+        service and keep the revenue? That is determinable — cloud service catalogs
+        are public — and it is conditional on properties already computed at gates
+        1 and 3. This is the Elastic / MongoDB / Redis story and the actual reason
+        BSL and SSPL were written.
+      inputs:
+        - hyperscaler_offers_this_project:
+            source: [aws_service_catalog, gcp_catalog, azure_catalog]
+            weight: 0.4
+            availability: live_tool_only
+            note: highest-signal input; a direct managed offering is near-decisive
+        - surface_is_natural_managed_service:
+            weight: 0.3
+            availability: reconstructable
+            changed_in: 0.2.0
+            change_rationale: >
+              Previously a high/low list with everything unlisted scored 0.5. On
+              the benchmark corpus that default caught server, daemon,
+              cli_stateful and framework_hosted — 11 of 24 projects, making 0.5
+              the modal value and flattening this dimension toward a constant.
+              Replaced with an explicit score for every surface. Every surface
+              appearing in benchmarks/projects.yaml MUST appear below, and an
+              unmapped surface is a hard error, never a default.
+            scores:
+              database: 1.0
+              search: 1.0
+              queue: 1.0
+              cache: 1.0
+              object_store: 0.9
+              stream_processor: 0.9
+              daemon: 0.7
+              server: 0.6
+              framework_hosted: 0.5
+              cli_stateful: 0.4
+              application: 0.2
+              workflow: 0.2
+              desktop_app: 0.1
+              vertical_saas: 0.1
+        - license_hosting_protection:
+            weight: 0.2
+            availability: reconstructable
+            direction: copyleft_reduces_risk
+        - incumbent_oss_alternative_exists:
+            weight: 0.1
+            availability: not_reconstructable
+            note: >
+              a big company open-sourcing a competitor (Kubernetes, Llama) is a
+              different and slower threat than a big company reselling YOU
+      interaction:
+        with: adoption_friction
+        detail: >
+          Copyleft costs enterprise adoption and simultaneously blocks hyperscaler
+          resale. Those pull opposite directions and the overlap is not incidental:
+          the -15 infrastructure AGPL penalty lands exactly where substitution risk
+          is highest, so copyleft is doing its most valuable work in the case where
+          it is charged the most. Expect these to partly cancel on infra projects.
+          If the backtest shows them fully cancelling, collapse them into one term.
+
+    - id: category_timing
+      weight: 15
+      note: >
+        Down-weighted from 30 when substitution_risk was added. Substitution risk is
+        measurable from public catalogs; category timing is a judgment call with
+        confidence: low. Weight should follow measurability, not recency.
+      confidence: low
+      rationale: >
+        Softest dimension. Is the category being funded, and have comparables
+        exited? Deliberately does NOT attempt market sizing — a TAM estimate from
+        a model is noise wearing a number, and the tool's credibility dies the
+        first time someone checks one and finds nothing behind it.
+      inputs:
+        - comparable_exits: { weight: 0.5, availability: not_reconstructable }
+        - category_funding_activity_24mo:
+            { weight: 0.5, availability: not_reconstructable }
+      output_style: evidence_and_comparables    # human makes the sizing call
+      backtest_note: >
+        Both inputs are not_reconstructable, so this dimension scores nothing in
+        any backtest and its full 15 weight comes off max_achievable. Under the
+        0.2.0 missing-input rule that is visible in the output rather than being
+        redistributed into the other three.
+
+# ---------------------------------------------------------------------------
+
+overlays:
+  note: >
+    default.yaml encodes reasoning, not house policy. Firms with a stricter stance
+    should harden it in an overlay rather than forking the defaults — e.g.
+    rubric/overlays/mit-only.yaml promoting the AGPL penalty to a hard gate. Keep
+    the public default defensible on its own evidence; a single firm's risk
+    tolerance shipped as a category-wide rule is the kind of thing readers check,
+    and Grafana is the counterexample sitting right there in the benchmark set.
+
+calibration:
+  status: UNCALIBRATED
+  method: >
+    blind scoring against benchmarks/projects.yaml at each project's fund
+    snapshot, recorded in runs/, and compared to benchmarks/outcomes.yaml only
+    afterwards and only by evaluate.py.
+  acceptance:
+    rewritten_in: 0.2.0
+    supersedes: >
+      "separates commercialized_success from never_commercialized". That was
+      written when the default mode was `form`. In `fund` mode the
+      never_commercialized group fails gate 4 for absence of an entity and never
+      reaches scoring, so the old criterion was unreachable in the default mode.
+      The contradiction was introduced when the default flipped and was not
+      propagated.
+    primary: separate commercialized_success (n=6) from commercialized_modest (n=7)
+    rationale: >
+      Vintage-matched (median fund_snapshot 2016.5 vs 2017) and the harder
+      question. Distinguishing a shutdown from an IPO in hindsight is easy;
+      distinguishing Grafana from InfluxDB at 2017 is the actual problem.
+    secondary: success vs failed — weaker, failed class still skews to 2014
+    power: >
+      n=13 across the primary comparison. This is a directional check and
+      CANNOT support a significance claim. Any writeup must say so in those
+      words.
+  gate_architecture_note: >
+    Acceptance above concerns SCORING only. The gates are not tested by this
+    corpus and cannot be — every entry was selected for being a resolved
+    commercial open source company, so licences, liveness, commercial surfaces
+    and entities are present by construction. See runs/README.md.

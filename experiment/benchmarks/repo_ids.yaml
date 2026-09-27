@@ -1,0 +1,85 @@
+# Stable numeric GitHub repo ids for the corpus.
+#
+# GHArchive records repo.name as of the event, so filtering history by a
+# project's CURRENT name misses everything recorded under a former one.
+# repo.id is permanent. Queries filter on it; see src/gharchive.py.
+#
+# current_full_name is recorded for audit only. It detects a rename that
+# happened AFTER today's name was adopted (docker/docker -> moby/moby) but
+# NOT one that happened before (elasticsearch/elasticsearch ->
+# elastic/elasticsearch, where today's name is already the new one). Only
+# the id is invariant, which is the whole reason it is used.
+# Resolved 2026-08-16T00:35:59+00:00 by tools/resolve_repo_ids.py
+repo_ids:
+  grafana/grafana:
+    repo_id: 15111821
+    current_full_name: grafana/grafana
+  getsentry/sentry:
+    repo_id: 873328
+    current_full_name: getsentry/sentry
+  dbt-labs/dbt-core:
+    repo_id: 53548867
+    current_full_name: dbt-labs/dbt-core
+  strapi/strapi:
+    repo_id: 43441403
+    current_full_name: strapi/strapi
+  directus/directus:
+    repo_id: 7122594
+    current_full_name: directus/directus
+  minio/minio:
+    repo_id: 29261473
+    current_full_name: minio/minio
+  mattermost/mattermost:
+    repo_id: 37448451
+    current_full_name: mattermost/mattermost
+  rethinkdb/rethinkdb:
+    repo_id: 6452529
+    current_full_name: rethinkdb/rethinkdb
+  meteor/meteor:
+    repo_id: 3214406
+    current_full_name: meteor/meteor
+  docker/docker:
+    repo_id: 7691631
+    current_full_name: moby/moby
+  puppetlabs/puppet:
+    repo_id: 910744
+    current_full_name: puppetlabs/puppet
+  elastic/elasticsearch:
+    repo_id: 507775
+    current_full_name: elastic/elasticsearch
+  mongodb/mongo:
+    repo_id: 108110
+    current_full_name: mongodb/mongo
+  redis/redis:
+    repo_id: 156018
+    current_full_name: redis/redis
+  apache/kafka:
+    repo_id: 2211243
+    current_full_name: apache/kafka
+  hashicorp/terraform:
+    repo_id: 17728164
+    current_full_name: hashicorp/terraform
+  owncloud/core:
+    repo_id: 5550552
+    current_full_name: owncloud/core
+  gitlabhq/gitlabhq:
+    repo_id: 2500088
+    current_full_name: gitlabhq/gitlabhq
+  cockroachdb/cockroach:
+    repo_id: 16563587
+    current_full_name: cockroachdb/cockroach
+  basho/riak:
+    repo_id: 613723
+    current_full_name: basho/riak
+  chef/chef:
+    repo_id: 108278
+    current_full_name: chef/chef
+  dcos/dcos:
+    repo_id: 56184050
+    current_full_name: dcos/dcos
+  etcd-io/etcd:
+    repo_id: 11225014
+    current_full_name: etcd-io/etcd
+  influxdata/influxdb:
+    repo_id: 13124802
+    current_full_name: influxdata/influxdb
