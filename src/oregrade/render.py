@@ -39,14 +39,13 @@ def to_markdown(doc: dict) -> str:
         add(doc.get("status_note", ""))
         return "\n".join(out) + "\n"
 
-    ident = doc.get("identity", {})
     add("## Identity")
     add("")
     add(f"- repo id: `{doc.get('repo_id')}` (rename-invariant)")
-    add(f"- current name: `{ident.get('current_full_name')}`")
-    if ident.get("renamed_since_requested"):
-        add(f"- **renamed since**: requested `{ident.get('requested')}`")
-    for note in ident.get("notes", []) or []:
+    add(f"- current name: `{doc.get('current_full_name')}`")
+    if doc.get("renamed_since_requested"):
+        add(f"- **renamed since**: requested `{doc['repo']}`")
+    for note in doc.get("identity_notes") or []:
         add(f"- _{note}_")
     add(f"- revision at date: `{doc.get('revision', '')[:12]}`")
     add("")
@@ -95,6 +94,18 @@ def to_markdown(doc: dict) -> str:
         f"(confidence {surf.get('confidence')}, method `{surf.get('method')}`)")
     if surf.get("evidence"):
         add(f"- evidence: _{surf['evidence']}_")
+    if surf.get("tied_candidates"):
+        add(f"- **tied**: {', '.join(f'`{t}`' for t in surf['tied_candidates'])}"
+            " — no classification given")
+    for cand in surf.get("candidates") or []:
+        if surf.get("tied_candidates"):
+            add(f"  - `{cand['surface']}` (strength {cand['match_strength']}): "
+                f"_{cand['evidence']}_")
+    deployable = surf.get("multi_user_deployable") or {}
+    value = deployable.get("value")
+    add(f"- multi-user deployable: "
+        f"`{'null' if value is None else str(value).lower()}` "
+        f"(inferred from surface, confidence {deployable.get('confidence')})")
     add(f"- {surf.get('note', '')}")
     add("")
 
@@ -112,6 +123,9 @@ def to_markdown(doc: dict) -> str:
         if key in act:
             add(_row(key, act[key]))
     add("")
+    if act.get("external_contributor_ratio_basis"):
+        add(f"_external_contributor_ratio: {act['external_contributor_ratio_basis']}_")
+        add("")
 
     com = doc.get("commercial", {})
     add("## Commercial")

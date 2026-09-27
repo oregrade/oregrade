@@ -68,6 +68,7 @@ def classify(readme: str | None, root_entries: list[str] | None = None) -> dict:
               "method": "heuristic_keyword", "confidence": "none",
               "inferred": True,
               "candidates": [],
+              "multi_user_deployable": _deployable(None, "none"),
               "note": "INFERRED, not measured. Check the quoted evidence."}
     if not readme:
         result["note"] = ("no README at this date — surface cannot be "
@@ -99,15 +100,52 @@ def classify(readme: str | None, root_entries: list[str] | None = None) -> dict:
     ranked = sorted(scores.items(), key=lambda kv: -kv[1])
     top, top_score = ranked[0]
     runner_up = ranked[1][1] if len(ranked) > 1 else 0
+    candidates = [{"surface": s, "match_strength": w, "evidence": quotes.get(s)}
+                  for s, w in ranked[:3]]
+
+    if top_score == runner_up:
+        # A TIE IS NOT AN ANSWER. Promoting one of two equally-matched
+        # candidates to the headline field turns a coin flip into a fact that
+        # reads as measured. sindresorhus/got ties `server` — matched on
+        # "Internal server error" inside a code sample — against `library`,
+        # matched on "a human-friendly and powerful HTTP request library".
+        # The candidates are the useful output here; the winner is not.
+        tied = [c["surface"] for c in candidates if c["match_strength"] == top_score]
+        result.update(
+            classification="unknown",
+            evidence=None,
+            candidates=candidates,
+            confidence="none",
+            tied_candidates=tied,
+            note=("INFERRED, and unresolved: " + " and ".join(tied) +
+                  " matched equally strongly, so no classification is given. "
+                  "The candidates below carry the evidence for each."))
+        return result
+
     result.update(
         classification=top,
         evidence=quotes.get(top),
-        candidates=[{"surface": s, "match_strength": w,
-                     "evidence": quotes.get(s)} for s, w in ranked[:3]],
-        confidence=("high" if top_score >= 2 and top_score > runner_up
-                    else "medium" if top_score > runner_up else "low"),
-        multi_user_deployable=top in PAY_NOT_TO_RUN)
-    if top_score == runner_up:
-        result["note"] = (f"INFERRED, and ambiguous: {ranked[0][0]} and "
-                          f"{ranked[1][0]} scored equally. Check the evidence.")
+        candidates=candidates,
+        confidence="high" if top_score >= 2 else "medium",
+        multi_user_deployable=_deployable(top, "high" if top_score >= 2
+                                          else "medium"))
     return result
+
+
+def _deployable(classification: str | None, confidence: str) -> dict:
+    """Derived from `classification`, so it inherits every doubt attached to it.
+
+    Reported as an object rather than a bare boolean because a bare boolean
+    reads as measured. It is not: it is a table lookup on an inferred field,
+    and where the classification is unknown the honest answer is null rather
+    than false.
+    """
+    known = classification in PAY_NOT_TO_RUN
+    return {
+        "value": None if classification in (None, "unknown") else known,
+        "inferred": True,
+        "inherits_from": "surface.classification",
+        "confidence": confidence,
+        "basis": ("true where the classification is one of "
+                  f"{sorted(PAY_NOT_TO_RUN)}"),
+    }

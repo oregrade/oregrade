@@ -35,7 +35,7 @@ class RepoIdentity:
     repo_id: int | None = None
     current_full_name: str | None = None
     renamed_since_requested: bool | None = None
-    resolved_at: str | None = None
+    looked_up_at: str | None = None
     source: str = "github_api"
     error: str | None = None
     notes: list[str] = field(default_factory=list)
@@ -48,7 +48,7 @@ class RepoIdentity:
         out = {"requested": self.requested, "repo_id": self.repo_id,
                "current_full_name": self.current_full_name,
                "renamed_since_requested": self.renamed_since_requested,
-               "resolved_at": self.resolved_at, "source": self.source}
+               "looked_up_at": self.looked_up_at, "source": self.source}
         if self.error:
             out["error"] = self.error
         if self.notes:
@@ -97,7 +97,8 @@ def resolve_identity(repo: str, token: str | None = None,
     identity.current_full_name = data["full_name"]
     identity.renamed_since_requested = (
         data["full_name"].lower() != repo.lower())
-    identity.resolved_at = datetime.now(timezone.utc).isoformat(timespec="seconds")
+    identity.looked_up_at = datetime.now(timezone.utc).isoformat(
+        timespec="seconds")
     if identity.renamed_since_requested:
         identity.notes.append(
             f"{repo} now redirects to {data['full_name']}; the id is unchanged "

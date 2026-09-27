@@ -133,6 +133,13 @@ def _activity_block(commits, bound: date) -> dict:
         "modal non-freemail domain among the top committers. Absent where the "
         "core team commits from personal addresses, which is itself the answer "
         "for a project with no corporate centre of gravity.")
+    out["external_contributor_ratio_basis"] = (
+        "share of trailing-12mo commits from outside the sponsoring email "
+        "domain."
+        if out.get("external_contributor_ratio") is not None else
+        "undefined: no sponsoring email domain could be identified, because "
+        "the top committers all use personal addresses. Reporting 1.0 here "
+        "would claim a fully external contributor base on no evidence.")
     out.pop("merge_commits_trailing_90d", None)
     return out
 
@@ -157,15 +164,32 @@ def build(repo_name: str, options: Options) -> dict:
     identity = pitgit.RepoIdentity(requested=repo_name)
     if not options.offline:
         identity = pitgit.resolve_identity(repo_name, token=options.token)
+    # Flat header, and repo_id appears exactly once. It is the headline
+    # identity fact; nesting a second copy under `identity` invites the two to
+    # drift and makes a reader wonder which is authoritative.
     doc["repo_id"] = identity.repo_id
-    doc["identity"] = identity.as_dict()
+    doc["repo_id_source"] = identity.source if identity.available else None
+    doc["current_full_name"] = identity.current_full_name
+    doc["renamed_since_requested"] = identity.renamed_since_requested
+    identity_notes = list(identity.notes)
+    if identity.error:
+        doc["repo_id_error"] = identity.error
     if identity.repo_id is None:
-        doc["identity"]["note"] = (
-            "unresolved. repo.id is what makes history lookups survive "
+        identity_notes.append(
+            "repo.id unresolved. It is what makes history lookups survive "
             "renames; without it the adoption block cannot run.")
+    if identity_notes:
+        doc["identity_notes"] = identity_notes
 
     clone_result = pitgit.clone(repo_name, dest)
-    doc["clone"] = clone_result
+    # `status` is reported once, at the top level. The clone block carries
+    # where it went and, on failure, why — not a second status field for a
+    # reader to reconcile with the first.
+    doc["clone"] = {"method": "blobless_no_checkout",
+                    "path": clone_result["path"],
+                    "reused_existing": clone_result["status"] == "already_present"}
+    if clone_result.get("stderr"):
+        doc["clone"]["stderr"] = clone_result["stderr"]
     repo = pitgit.Repo(dest)
     if clone_result["status"] == "clone_unavailable" or not repo.exists():
         doc["status"] = "clone_unavailable"
